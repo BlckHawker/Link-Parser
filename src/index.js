@@ -21,4 +21,4 @@ client.on('messageCreate', (message) => {
 
     message.channel.send(message.content);
 })
-client.login(process.en)
+client.login(process.env.DISCORD_TOKEN)
