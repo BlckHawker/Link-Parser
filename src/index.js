@@ -1,6 +1,6 @@
 require("dotenv").config();
-const { saveToDataFile, readDataFile } = require('./utils');
-const { registerCommands, handleCommand } = require('./commands');
+const { saveToDataFile, readDataFile, replaceLink } = require("./utils");
+const { registerCommands, handleCommand } = require("./commands");
 const { Client, IntentsBitField } = require("discord.js");
 const client = new Client({
   intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent],
@@ -10,25 +10,40 @@ client.on("ready", (c) => {
   console.log(`${c.user.tag} is online`);
 });
 
-client.on("messageCreate", (message) => {
-  if (message.author.bot) {
+client.on("messageCreate", async (message) => {
+  //todo if any of the following is true, don't do anything
+  /** message came from a bot
+   * message content is empty
+   * the bot is disabled in the sever */
+
+  const serverId = message.channel.guild.id;
+  let data = readDataFile();
+  const serverObj = data.find((obj) => obj.serverId === serverId);
+  if (message.author.bot || !message.content || !serverObj.enabled) {
     return;
   }
 
-  //if the message doesn't have any content (like a pin), don't send anything
-  if (!message.content) {
+  const found = replaceLink(message.content)
+  if (found === undefined) {
     return;
   }
 
-  message.channel.send(message.content);
+  //delete the original message
+  message.delete();
+
+  //send the message
+  const newMessage = await message.channel.send(found);
+
+  //update the message so it updates the user
+  newMessage.edit(`${newMessage.content} sent by <@${message.author.id}>`)
+
 });
 
 client.on("guildCreate", (guild) => {
-
-  //When the bot joins a server, 
+  //When the bot joins a server,
   //create a new object with the server id saved and "enabled" being set to false
   let data = readDataFile();
-  data.push({ serverId: guild.id, enabled: false })
+  data.push({ serverId: guild.id, enabled: false });
   saveToDataFile(data);
 
   //register commands
@@ -42,11 +57,10 @@ client.on("guildDelete", (guild) => {
   saveToDataFile(data);
 });
 
-client.on('interactionCreate', (interaction) => {
-    if(!interaction.isChatInputCommand())
-        return;
+client.on("interactionCreate", (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-    handleCommand(interaction);
-})
+  handleCommand(interaction);
+});
 
 client.login(process.env.DISCORD_TOKEN);
