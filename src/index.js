@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { saveToDataFile, readDataFile } = require('./utils');
-const { registerCommands } = require('./commands');
+const { registerCommands, handleCommand } = require('./commands');
 const { Client, IntentsBitField } = require("discord.js");
 const client = new Client({
   intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent],
@@ -46,33 +46,7 @@ client.on('interactionCreate', (interaction) => {
     if(!interaction.isChatInputCommand())
         return;
 
-    let data = readDataFile();
-    const serverId = interaction.channel.guild.id;
-    const serverObj = data.find(obj => obj.serverId === serverId);
-
-    switch(interaction.commandName)
-    {
-        case 'set-enabled':
-            const newValue = interaction.options.get('value').value;
-
-            //if the new value is the same as the old one send a message saying it's redundant
-            if(serverObj.enabled === newValue) {
-                interaction.reply({content:`The bot is already ${newValue ? 'enabled' : 'disabled'}`, ephemeral: true})
-            }
-
-            //update the value, and send a message
-            else {
-                data = data.filter(obj => obj.serverId !== serverId);
-                data.push({serverId: serverId, "enabled": newValue});
-                saveToDataFile(data);
-                interaction.reply({content:`The bot is now ${newValue ? 'enabled' : 'disabled'}`, ephemeral: true})
-            }
-        break;
-        case 'view-enabled':
-            //tell the user if the bot is enabled in this server
-            interaction.reply({content:`The bot is ${serverObj.enabled ? 'enabled' : 'disabled'}`, ephemeral: true})
-        break;
-    }
+    handleCommand(interaction);
 })
 
 client.login(process.env.DISCORD_TOKEN);
