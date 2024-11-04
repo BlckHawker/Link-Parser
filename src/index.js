@@ -46,13 +46,14 @@ client.on('interactionCreate', (interaction) => {
     if(!interaction.isChatInputCommand())
         return;
 
+    let data = readDataFile();
+    const serverId = interaction.channel.guild.id;
+    const serverObj = data.find(obj => obj.serverId === serverId);
+
     switch(interaction.commandName)
     {
         case 'set-enabled':
             const newValue = interaction.options.get('value').value;
-            const serverId = interaction.channel.guild.id;
-            let data = readDataFile();
-            const serverObj = data.find(obj => obj.serverId === serverId);
 
             //if the new value is the same as the old one send a message saying it's redundant
             if(serverObj.enabled === newValue) {
@@ -68,6 +69,8 @@ client.on('interactionCreate', (interaction) => {
             }
         break;
         case 'view-enabled':
+            //tell the user if the bot is enabled in this server
+            interaction.reply({content:`The bot is ${serverObj.enabled ? 'enabled' : 'disabled'}`, ephemeral: true})
         break;
     }
 })
