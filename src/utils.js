@@ -30,11 +30,8 @@ const replaceLink = (str) => {
     //check if any of the links are what we're looking for. If they are, parse into the new link and return it
     for(const regexObj of regexObjs) {
         const found = str.match(regexObj.regex)
-        console.log(found)
         if(found !== null) {
-            console.log('found object')
             return regexObj.callback(found);
-            
         }
     }
 }
