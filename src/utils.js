@@ -15,7 +15,7 @@ const readDataFile = () => {
 
 //parses the link and returns the new link if valid. Returns undefined otherwise
 const replaceLink = (str) => {
-    //todo don't worry about messages that have spaces in them as they would imply they are something more than a link
+    //don't worry about messages that have spaces in them as they would imply they are something more than a link
     if(str.indexOf(' ') !== -1) {
         return undefined;
     }
