@@ -20,10 +20,13 @@ const replaceLink = (str) => {
         return undefined;
     }
     const regexObjs = [
-        {regex: /(https:\/\/www\.)tiktok\.com(\/t\/(?:.{9})\/)/i, callback: (arr) => {return `${arr[1]}vxtiktok.com${arr[2]}`}},
-        {regex: /(https:\/\/www\.)tiktok\.com\/@(.+)\/video\/([0-9]{19})(?:\?.+)/i, callback: (arr) => {return `${arr[1]}vxtiktok.com/@${arr[2]}/video/${arr[3]}`}},
+        {regex: /(https:\/\/www\.)tiktok\.com(\/t\/(?:.{9})\/?)/i, callback: (arr) => {return `${arr[1]}vxtiktok.com${arr[2]}`}},
+        {regex: /(https:\/\/www\.)tiktok\.com\/@(.+)\/video\/([0-9]{19})\/?(?:\?.+)?/i, callback: (arr) => {return `${arr[1]}vxtiktok.com/@${arr[2]}/video/${arr[3]}/`}},
+        {regex: /(https:\/\/www\.)tiktok\.com\/@(.+)\/video\/([0-9]{19})\?is_from_webapp=(?:\d+)&sender_device=pc/i, callback: (arr) => {return `${arr[1]}vxtiktok.com/@${arr[2]}/video/${arr[3]}/`}},
         {regex: /https:\/\/x\.com\/(.+)\/status\/([0-9]{19})(?:\?t=[a-zA-Z0-9_-]{22}&s=19)?/i, callback: (arr) => {return `https://fixupx.com/${arr[1]}/status/${arr[2]}`}},
-        {regex: /https:\/\/www\.instagram\.com\/p\/([A-Z0-9]{11})\/(?:\?igsh=[A-Z0-9]{15, 18}={1,2})?/i, callback: (arr) => {return `https://www.ddinstagram.com/p/${arr[1]}/`}},
+        {regex: /https:\/\/www\.instagram\.com\/p\/([A-Z0-9_]{11})\/\?img_index=(\d+)/i, callback: (arr) => {return `https://www.ddinstagram.com/p/${arr[1]}/?img_index=${arr[2]}`}},
+        {regex: /https:\/\/www\.instagram\.com\/p\/([A-Z0-9_]{11})\/(?:\?igsh=[A-Z0-9]{15, 18}={1,2})?/i, callback: (arr) => {return `https://www.ddinstagram.com/p/${arr[1]}/`}},
+        {regex: /https:\/\/www\.instagram\.com\/p\/([A-Z0-9_]{11})\/?/i, callback: (arr) => {return `https://www.ddinstagram.com/p/${arr[1]}/`}},
         {regex: /https:\/\/www\.instagram\.com\/reel\/([A-Z0-9]{11})\/(?:\?igsh=[A-Z0-9]{15, 18}={1,2})?/i, callback: (arr) => {return `https://www.ddinstagram.com/reel/${arr[1]}/`}},
     ]
 
