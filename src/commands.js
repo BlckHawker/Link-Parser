@@ -79,9 +79,26 @@ const handleCommand = (interaction) => {
         .setColor(0x0099FF)
         .setTitle('Commands')
         .setDescription(`- **/${setEnabledCommandName}** - Enable the bot. Needs to be done in order for it to work\n- **/${viewEnabledCommandName}** - view if the bot is enabled`)
-      interaction.reply({ content: `Have you ever been sent a link from twitter/instagram/tiktok and were forced to login in or redirected to the app/site order to see the content? There are some "link fixers" where you can edit the url in order for it to appear in discord, but it can be annoying to remember them all. This bot cuts out you needing to edit the link by deleting your original message and reposting the message with the fixed link. It will then "ping" you as the original poster. (It doesn't actually ping you as it edits the message to add the mention).`, ephemeral: true, embeds: [embed]  })
+      interaction.reply({ content: `Have you ever been sent a link from twitter/instagram/tiktok and were forced to login in or redirected to the app/site order to see the content? There are some "link fixers" where you can edit the url in order for it to appear in discord, but it can be annoying to remember them all. This bot cuts out you needing to edit the link by deleting your original message and reposting the message with the fixed link. It will then "ping" you as the original poster. (It doesn't actually ping you as it edits the message to add the mention).`, ephemeral: true, embeds: [embed] })
       break
     case setEnabledCommandName:
+      //todo don't allow the user to do use the command if they are not
+      /* The server owner
+       * A whitelisted user or owner
+       */
+
+      console.log(interaction.user.id)
+      const obj = data.find(obj => obj.serverId === interaction.guild.id);
+
+      // if (interaction.guild.ownerId != interaction.user.id &&
+      //   !interaction.member.roles.cache.some(role => obj.allowedRoles.includes(role.name)) &&
+      //   !obj.allowedUsers.includes(interaction.user.id)) 
+      {
+
+          interaction.reply({content: `You do not have permissions to run this command. The following people are able to run it:\n### Users\n- @<${interaction.guild.ownerId}>  (the server owner)\n### Roles\n- Wa\nContact the server owner to give you permission`, ephemeral: false })
+          return;
+      }
+
       const newValue = interaction.options.get('value').value;
 
       //if the new value is the same as the old one send a message saying it's redundant
