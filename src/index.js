@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { saveToDataFile, readDataFile, replaceLink } = require("./utils");
+const { saveToDataFile, readDataFile, replaceLink, createNewObject } = require("./utils");
 const { registerCommands, handleCommand } = require("./commands");
 const { Client, IntentsBitField } = require("discord.js");
 const client = new Client({
@@ -11,7 +11,7 @@ client.on("ready", (c) => {
 });
 
 client.on("messageCreate", async (message) => {
-  //todo if any of the following is true, don't do anything
+  //if any of the following is true, don't do anything
   /** message came from a bot
    * message content is empty
    * the bot is disabled in the sever */
@@ -43,7 +43,7 @@ client.on("guildCreate", (guild) => {
   //When the bot joins a server,
   //create a new object with the server id saved and "enabled" being set to false
   let data = readDataFile();
-  data.push({ serverId: guild.id, enabled: false });
+  data.push(createNewObject(guild.id));
   saveToDataFile(data);
 
   //register commands

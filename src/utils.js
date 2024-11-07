@@ -40,5 +40,30 @@ const replaceLink = (str) => {
 }
 
 
+const createNewObject = (serverId) => {
+    return { serverId, enabled: false, allowedRoles: [], allowedUsers: [] }
+}
 
-module.exports = { saveToDataFile, readDataFile, replaceLink }
+//todo make this a unit test
+const updateObject = (oldObject, changeIndex, newValue) => {
+    const newObject = structuredClone(oldObject);
+    switch(changeIndex)
+    {
+        case 0: //enabled
+        newObject.enabled = newValue;
+        break;
+
+        case 1: //allowedRoles
+        newObject.allowedRoles.push(newValue);
+        break;
+
+        case 2: //allowedUsers
+        newObject.allowedUsers.push(newValue);
+        break;
+    }
+    return newObject;
+}
+
+
+
+module.exports = { saveToDataFile, readDataFile, replaceLink, createNewObject, updateObject }

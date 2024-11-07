@@ -1,7 +1,9 @@
-const { saveToDataFile, readDataFile } = require('./utils');
+const { saveToDataFile, readDataFile, updateObject } = require('./utils');
 const { REST, Routes, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const setEnabledCommandName = 'set-enabled';
 const viewEnabledCommandName = 'view-enabled';
+const enablePersonRole = 'allow-enable'
+
 
 //registers all the commands in a specific server
 const registerCommands = (serverId) => {
@@ -26,6 +28,22 @@ const registerCommands = (serverId) => {
       name: viewEnabledCommandName,
       description: 'See if the bot is enabled',
     },
+    {
+      name: enablePersonRole,
+      description: 'Only the server owner can use this command. Allows a specific user or role to enable/disable the bot. Requires role **OR** user option',
+      options: [
+        {
+          name: 'user',
+          description: 'The user who will be allowed to enable/disable the bot',
+          type: ApplicationCommandOptionType.User,
+        },
+        {
+          name: 'role',
+          description: 'The role who will be allowed to enable/disable the bot',
+          type: ApplicationCommandOptionType.Role,
+        },
+      ]
+    }
   ];
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -73,15 +91,31 @@ const handleCommand = (interaction) => {
 
       //update the value, and send a message
       else {
+        const newObject = updateObject(data.find(obj => obj.serverId === serverId));
         data = data.filter(obj => obj.serverId !== serverId);
-        data.push({ serverId: serverId, "enabled": newValue });
+        data.push(newObject)
         saveToDataFile(data);
         interaction.reply({ content: `The bot is now ${newValue ? 'enabled' : 'disabled'}`, ephemeral: true })
       }
       break;
-    case 'view-enabled':
+    case viewEnabledCommandName:
       //tell the user if the bot is enabled in this server
       interaction.reply({ content: `The bot is ${serverObj.enabled ? 'enabled' : 'disabled'}`, ephemeral: true })
+      break;
+
+    case enablePersonRole:
+
+      //todo if the person who used this command isn't the server owner, send a warning
+
+      //todo get the options
+
+      //todo if both options are given, send a waring
+
+      //todo if neither option is given, send a warning
+
+      //todo if the desired user/role is already added, send a warning
+
+      //todo add the desired role/user to the appropriate array, and send a message
       break;
   }
 }

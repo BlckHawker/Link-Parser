@@ -105,5 +105,3 @@ describe('Instagram links', () => {
         })
     })
 })
-
-//todo test a message that does not include a link

@@ -1,5 +1,5 @@
-const { readDataFile } = require("./utils");
-const { registerCommands } = require("./commands");
+const { readDataFile } = require("../utils");
+const { registerCommands } = require("../commands");
 //helper script/function that automatically registers slash commands without kicking the bot out
 (async () => {
     try {
