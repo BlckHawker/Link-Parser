@@ -57,10 +57,10 @@ client.on("guildDelete", (guild) => {
   saveToDataFile(data);
 });
 
-client.on("interactionCreate", (interaction) => {
+client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  handleCommand(interaction);
+  await handleCommand(interaction);
 });
 
 client.login(process.env.DISCORD_TOKEN);
