@@ -1,10 +1,12 @@
-const { saveToDataFile, readDataFile, updateObject } = require("./utils");
+const utils = require("./utils");
 const { getServerUsers, getServerRoles } = require("./apiCalls");
 
 const { REST, Routes, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+const apiCalls = require("./apiCalls");
 const setEnabledCommandName = "set-enabled";
 const viewEnabledCommandName = "view-enabled";
 const enablePersonRole = "allow-enable";
+const viewEnableUserRoles = "view-enable-users-roles";
 
 //registers all the commands in a specific server
 const registerCommands = (serverId) => {
@@ -63,7 +65,7 @@ const registerCommands = (serverId) => {
 };
 
 const handleCommand = async (interaction) => {
-  let data = readDataFile();
+  let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
   const serverObj = data.find((obj) => obj.serverId === serverId);
 
@@ -80,27 +82,30 @@ const handleCommand = async (interaction) => {
       });
       break;
     case setEnabledCommandName:
-      /* don't allow the user to do use the command if they are not 
+      /* don't allow the user to do use the command if they are not
        * The server owner
        * A whitelisted user
        * Dont have a whitelisted role
        */
 
-
-      if (interaction.guild.ownerId != interaction.user.id &&
-        !interaction.member.roles.cache.some(role => serverObj.allowedRoles.includes(role.id)) &&
-        !serverObj.allowedUsers.includes(interaction.user.id))
-      {
+      const bool = await utils.userIsAllowed();
+      console.log(bool);
+      return;
+      if (
+        interaction.guild.ownerId != interaction.user.id &&
+        !interaction.member.roles.cache.some((role) => serverObj.allowedRoles.includes(role.id)) &&
+        !serverObj.allowedUsers.includes(interaction.user.id)
+      ) {
         //get the users who can enable/disable the bot
-        const validUserIds = [interaction.guild.ownerId].concat(serverObj.allowedUsers);
-        const validUserObj =  await getServerUsers(serverObj.serverId, validUserIds);
-        const validUserNames = validUserObj.map((obj, ix) => `- **${obj.user.username}**${ix == 0 ? " (the server owner)" : ""}` )
+        const allowedUsers = await utils.getAllowedUserNames(serverId);
 
         //get the roles who can enable/disable the bot
-        const validRolesObj = await getServerRoles(serverObj.serverId, serverObj.allowedRoles);
-        const validRoleNames = validRolesObj.length == 0 ? [`- N/A`] : validRolesObj.map(obj => `- **${obj.name}**` )
+        const allowedRoles = await utils.getAllowedRolesNames(serverId);
+
         interaction.reply({
-          content: `You do not have permissions to run this command. The following people are able to run it:\n### Users\n${validUserNames.join('\n')}\n### Roles\n${validRoleNames.join('\n')}\n\nContact the server owner to give you permission`,
+          content: `You do not have permissions to run this command. The following people are able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join(
+            "\n"
+          )}\n\nContact the server owner to give you permission`,
           ephemeral: true,
         });
         return;
@@ -115,10 +120,10 @@ const handleCommand = async (interaction) => {
 
       //update the value, and send a message
       else {
-        const newObject = updateObject(data.find((obj) => obj.serverId === serverId));
+        const newObject = utils.updateObject(data.find((obj) => obj.serverId === serverId));
         data = data.filter((obj) => obj.serverId !== serverId);
         data.push(newObject);
-        saveToDataFile(data);
+        utils.saveToDataFile(data);
         interaction.reply({ content: `The bot is now ${newValue ? "enabled" : "disabled"}`, ephemeral: true });
       }
       break;
@@ -139,6 +144,17 @@ const handleCommand = async (interaction) => {
       //todo if the desired user/role is already added, send a warning
 
       //todo add the desired role/user to the appropriate array, and send a message
+      break;
+
+    case viewEnableUserRoles:
+      //get the users who can enable/disable the bot
+      const allowedUsers = await utils.getAllowedUserNames(serverId);
+
+      //get the roles who can enable/disable the bot
+      const allowedRoles = await utils.getAllowedRolesNames(serverId);
+
+      `You do not have permissions to run this command. The following people are able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join("\n")}\n\nContact the server owner to give you permission`
+
       break;
   }
 };

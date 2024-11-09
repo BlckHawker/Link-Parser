@@ -2,7 +2,6 @@ require("dotenv").config();
 const version = 10;
 const baseUrl = `https://discord.com/api/v${version}`;
 
-
 // helper method for discord get requests
 const getAPICall = async (url, body = {
     method:  'GET',
@@ -33,16 +32,24 @@ const getServerUsers = async (serverId, userIds) => {
 }
 
 //get role object given the serverId and roleId
-const getServerRole = async (serverId, roleId) => {
+const getServerRoleId = async (serverId, roleId) => {
     return await getAPICall(`${baseUrl}/guilds/${serverId}/roles/${roleId}`);
 }
 
-const getServerRoles = async (serverId, roleIds) => {
+const getServerRolesWithIds = async (serverId, roleIds) => {
     const roles = [];
     for(const roleId of roleIds) {
-        roles.push(await getServerRole(serverId, roleId));
+        roles.push(await getServerRoleId(serverId, roleId));
     }
     return roles;
 }
 
-module.exports = { getServerUsers, getServerRoles }
+const getServerRoles = async(serverId) => {
+    return await getAPICall(`${baseUrl}/guilds/${serverId}/roles`);
+}
+
+const getServer = async (serverId) => {
+    return await getAPICall(`${baseUrl}/guilds/${serverId}`)
+}
+
+module.exports = { getServerUsers, getServerRoles: getServerRolesWithIds, getServer, getServerRoles }
