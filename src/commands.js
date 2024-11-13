@@ -74,7 +74,6 @@ const registerCommands = (serverId) => {
 const handleCommand = async (interaction) => {
   let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
-  const interactionAuthorId = interaction.user.id;
   const serverObj = data.find((obj) => obj.serverId === serverId);
 
   switch (interaction.commandName) {
@@ -116,7 +115,6 @@ const handleCommand = async (interaction) => {
 
       //update the value, and send a message
       else {
-        //todo verify this still works
         const newObject = utils.updateObject(serverObj, 0, newValue);
         data = data.filter((obj) => obj.serverId !== serverId);
         data.push(newObject);
@@ -137,7 +135,7 @@ const handleCommand = async (interaction) => {
         return;
       }
 
-      //todo get the options
+      //get the options
       const targetUser = interaction.options.get("user")?.value;
       const targetRole = interaction.options.get("role")?.value;
 
@@ -166,7 +164,7 @@ const handleCommand = async (interaction) => {
           return;
         }
 
-        //todo add the desired user to the appropriate array, and send a message
+        //add the desired user to the appropriate array, and send a message
         else {
           const newObject = utils.updateObject(serverObj, 2, targetUser);
           data = data.filter((obj) => obj.serverId !== serverId);
@@ -179,14 +177,29 @@ const handleCommand = async (interaction) => {
       }
 
       else {
+        const roleObj = await apiCalls.getServerRoleId(serverId, targetRole);
 
+        //if the role is @everyone, send a warning
+        if(roleObj.name === "@everyone") {
+          interaction.reply({ content: `Cant't allow @everyone to use the **/${setEnabledCommandName}** command`, ephemeral: true });
+          return;
+        }
+        //if the desired role is already added, send a warning
+        if (serverObj.allowedRoles.includes(targetRole)) {
+          interaction.reply({ content: `Role **${roleObj.name}** is already allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true });
+          return;
+        }
+
+        //add the desired role to the appropriate array, and send a message
+        else {
+          const newObject = utils.updateObject(serverObj, 3, targetUser);
+          data = data.filter((obj) => obj.serverId !== serverId);
+          data.push(newObject);
+          utils.saveToDataFile(data);
+          interaction.reply({ content: `Role **${roleObj.name}** is now allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true })
+          return;
+        }
       }
-
-      //todo if the desired role is already added, send a warning
-
-
-      //todo add the desired role to the appropriate array, and send a message
-
       break;
 
     case viewEnableUserRoles:

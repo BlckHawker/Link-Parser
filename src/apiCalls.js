@@ -48,4 +48,4 @@ const getServer = async (serverId) => {
     return await getAPICall(`${baseUrl}/guilds/${serverId}`)
 }
 
-module.exports = { getServerUser, getServerUsers, getServerRolesWithIds, getServer }
+module.exports = { getServerUser, getServerRoleId, getServerUsers, getServerRolesWithIds, getServer }
