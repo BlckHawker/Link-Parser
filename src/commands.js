@@ -6,6 +6,7 @@ const apiCalls = require("./apiCalls");
 const setEnabledCommandName = "set-enabled";
 const viewEnabledCommandName = "view-enabled";
 const enablePersonRole = "allow-enable";
+const disablePersonRole = "disallow-enable"
 const viewEnableUserRoles = "view-enabled-users";
 
 //registers all the commands in a specific server
@@ -73,7 +74,7 @@ const registerCommands = (serverId) => {
 const handleCommand = async (interaction) => {
   let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
-  const interactionAuthorId = interaction.user.id; 
+  const interactionAuthorId = interaction.user.id;
   const serverObj = data.find((obj) => obj.serverId === serverId);
 
   switch (interaction.commandName) {
@@ -128,17 +129,57 @@ const handleCommand = async (interaction) => {
       break;
 
     case enablePersonRole:
-      //todo if the person who used this command isn't the server owner, send a warning
+      //if the person who used this command isn't the server owner, send a warning
+      //todo test this with someone
+      if (interaction.channel.guild.ownerId !== interaction.guild.ownerId) {
+        interaction.reply({ content: `Only the server owner can run this command`, ephemeral: true });
+        return;
+      }
 
       //todo get the options
+      const targetUser = interaction.options.get("user")?.value;
+      const targetRole = interaction.options.get("role")?.value;
 
-      //todo if both options are given, send a waring
+      console.log(targetUser);
+      console.log(targetRole);
 
-      //todo if neither option is given, send a warning
 
-      //todo if the desired user/role is already added, send a warning
+      //if both options are given, send a waring
+      if (targetUser !== undefined && targetRole !== undefined) {
+        interaction.reply({ content: `Need either the user or role. Can't give both`, ephemeral: true });
+        return;
+      }
 
-      //todo add the desired role/user to the appropriate array, and send a message
+      //if neither option is given, send a warning
+      if (targetUser === undefined && targetRole === undefined) {
+        interaction.reply({ content: `You did not provide either the user or role.`, ephemeral: true });
+      }
+
+      if (targetUser !== undefined) {
+        //todo if the target user is the server owner, send a warning
+        if(targetUser === interaction.channel.guild.ownerId) {
+          interaction.reply({ content: `The sever owner already is allowed`, ephemeral: true });
+          return;
+        }
+        //if the desired user is already added, send a warning
+        if (serverObj.allowedUsers.includes(targetUser)) {
+          //todo change the content
+          interaction.reply({ content: `This person is already added to the array`, ephemeral: true });
+          return;
+        }
+        //todo add the desired user to the appropriate array, and send a message
+
+      }
+
+      else {
+
+      }
+
+      //todo if the desired role is already added, send a warning
+
+
+      //todo add the desired role to the appropriate array, and send a message
+
       break;
 
     case viewEnableUserRoles:
@@ -156,7 +197,7 @@ const handleCommand = async (interaction) => {
 };
 
 const getListMessage = (userIsAllowed, allowedUsers, allowedRoles) => {
-  return `You ${!userIsAllowed ? "do not " : ""}have permissions to run **/${setEnabledCommandName}**. Here is a full list of people are ${userIsAllowed ? "also " : ""}able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join("\n")}${ !userIsAllowed ? "\n\nContact the server owner to give you permission " : ""}`
+  return `You ${!userIsAllowed ? "do not " : ""}have permissions to run **/${setEnabledCommandName}**. Here is a full list of people are ${userIsAllowed ? "also " : ""}able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join("\n")}${!userIsAllowed ? "\n\nContact the server owner to give you permission " : ""}`
 }
 
 module.exports = { registerCommands, handleCommand };
