@@ -281,8 +281,7 @@ const handleCommand = async (interaction) => {
           const newObject = utils.updateObject(serverObj, 2, newList);
           data = data.filter((obj) => obj.serverId !== serverId);
           data.push(newObject);
-          console.log(newObject)
-          // utils.saveToDataFile(data);
+          utils.saveToDataFile(data);
           interaction.reply({ content: `Role **${roleObj.name}** is now unable to use the **/${setEnabledCommandName}** command`, ephemeral: true })
           return;
         }
