@@ -116,7 +116,8 @@ const handleCommand = async (interaction) => {
 
       //update the value, and send a message
       else {
-        const newObject = utils.updateObject(data.find((obj) => obj.serverId === serverId));
+        //todo verify this still works
+        const newObject = utils.updateObject(serverObj, 0, newValue);
         data = data.filter((obj) => obj.serverId !== serverId);
         data.push(newObject);
         utils.saveToDataFile(data);
@@ -140,9 +141,6 @@ const handleCommand = async (interaction) => {
       const targetUser = interaction.options.get("user")?.value;
       const targetRole = interaction.options.get("role")?.value;
 
-      console.log(targetUser);
-      console.log(targetRole);
-
 
       //if both options are given, send a waring
       if (targetUser !== undefined && targetRole !== undefined) {
@@ -156,18 +154,27 @@ const handleCommand = async (interaction) => {
       }
 
       if (targetUser !== undefined) {
-        //todo if the target user is the server owner, send a warning
-        if(targetUser === interaction.channel.guild.ownerId) {
-          interaction.reply({ content: `The sever owner already is allowed`, ephemeral: true });
+        //if the target user is the server owner, send a warning
+        if (targetUser === interaction.channel.guild.ownerId) {
+          interaction.reply({ content: `The sever owner already is allowed to use **/${setEnabledCommandName}**`, ephemeral: true });
           return;
         }
+        const userObj = await apiCalls.getServerUser(serverId, targetUser);
         //if the desired user is already added, send a warning
         if (serverObj.allowedUsers.includes(targetUser)) {
-          //todo change the content
-          interaction.reply({ content: `This person is already added to the array`, ephemeral: true });
+          interaction.reply({ content: `**${userObj.user.username}** is already allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true });
           return;
         }
+
         //todo add the desired user to the appropriate array, and send a message
+        else {
+          const newObject = utils.updateObject(serverObj, 2, targetUser);
+          data = data.filter((obj) => obj.serverId !== serverId);
+          data.push(newObject);
+          utils.saveToDataFile(data);
+          interaction.reply({ content: `**${userObj.user.username}** is now allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true })
+          return;
+        }
 
       }
 
