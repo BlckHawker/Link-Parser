@@ -88,6 +88,7 @@ const registerCommands = (serverId) => {
 };
 
 const handleCommand = async (interaction) => {
+  const testServerId = '1302773269018968115'
   let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
   const serverObj = data.find((obj) => obj.serverId === serverId);
@@ -99,9 +100,9 @@ const handleCommand = async (interaction) => {
       const embed = new EmbedBuilder()
         .setColor(0x0099ff)
         .setTitle("Commands")
-        .setDescription(`- **/${setEnabledCommandName}** - Enable the bot. Needs to be done in order for it to work\n- **/${viewEnabledCommandName}** - view if the bot is enabled`);
+        .setDescription(`- **/${setEnabledCommandName}** - Toggle the enability of the bot. Needs to be done in order for it to work\n- **/${viewEnabledCommandName}** - view if the bot is enabled\n- **/${viewEnableUserRoles}** - see who is allowed to use the **/${setEnabledCommandName}** command\n- **/${enablePersonRole}** - whitelists a certain user/role to use the **/${setEnabledCommandName}** command. **(Only the server owner can use this)**\n - **/${disablePersonRole}** - remove a certain user/role from the whitelist to use the **/${setEnabledCommandName}** command. **(Only the server owner can use this)**` );
       interaction.reply({
-        content: `Have you ever been sent a link from twitter/instagram/tiktok and were forced to login in or redirected to the app/site order to see the content? There are some "link fixers" where you can edit the url in order for it to appear in discord, but it can be annoying to remember them all. This bot cuts out you needing to edit the link by deleting your original message and reposting the message with the fixed link. It will then "ping" you as the original poster. (It doesn't actually ping you as it edits the message to add the mention).`,
+        content: `Have you ever been sent a link from twitter/instagram/tiktok and were forced to login in or redirected to the app/site order to see the content? There are some "link fixers" where you can edit the url in order for it to appear in discord, but it can be annoying to remember them all. This bot cuts out you needing to edit the link by deleting your original message and reposting the message with the fixed link. It will then "ping" you as the original poster. (It doesn't actually ping you as it edits the message to add the mention).\n\n If you see a bug please report them as a issue on github [here](https://github.com/BlckHawker/Link-Parser/issues). ${testServerId === serverId ? `Since you are in the test server, you can also make report in bug reports. Please do not report in both places as that will cause confusion.` : ""}`,
         ephemeral: true,
         embeds: [embed],
       });
