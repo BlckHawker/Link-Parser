@@ -6,10 +6,12 @@ const apiCalls = require("./apiCalls");
 const setEnabledCommandName = "set-enabled";
 const viewEnabledCommandName = "view-enabled";
 const enablePersonRole = "allow-enable";
-const viewEnableUserRoles = "view-enable-users-roles";
+const viewEnableUserRoles = "view-enabled-users";
 
 //registers all the commands in a specific server
 const registerCommands = (serverId) => {
+  let userIsAllowed;
+
   const commands = [
     {
       name: "help",
@@ -33,7 +35,7 @@ const registerCommands = (serverId) => {
     },
     {
       name: enablePersonRole,
-      description: "Only the server owner can use this command. Allows a specific user or role to enable/disable the bot. Requires role **OR** user option",
+      description: "Allows a specific user or role to enable/disable the bot. Requires role **OR** user option",
       options: [
         {
           name: "user",
@@ -47,6 +49,10 @@ const registerCommands = (serverId) => {
         },
       ],
     },
+    {
+      name: viewEnableUserRoles,
+      description: `View who is able to use the "/${setEnabledCommandName}" command`
+    }
   ];
 
   const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
@@ -67,6 +73,7 @@ const registerCommands = (serverId) => {
 const handleCommand = async (interaction) => {
   let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
+  const interactionAuthorId = interaction.user.id; 
   const serverObj = data.find((obj) => obj.serverId === serverId);
 
   switch (interaction.commandName) {
@@ -82,20 +89,10 @@ const handleCommand = async (interaction) => {
       });
       break;
     case setEnabledCommandName:
-      /* don't allow the user to do use the command if they are not
-       * The server owner
-       * A whitelisted user
-       * Dont have a whitelisted role
-       */
+      //check if the user is allowed to run this command
+      userIsAllowed = await utils.userIsAllowed(interaction, serverId);
 
-      const bool = await utils.userIsAllowed();
-      console.log(bool);
-      return;
-      if (
-        interaction.guild.ownerId != interaction.user.id &&
-        !interaction.member.roles.cache.some((role) => serverObj.allowedRoles.includes(role.id)) &&
-        !serverObj.allowedUsers.includes(interaction.user.id)
-      ) {
+      if (!userIsAllowed) {
         //get the users who can enable/disable the bot
         const allowedUsers = await utils.getAllowedUserNames(serverId);
 
@@ -103,9 +100,7 @@ const handleCommand = async (interaction) => {
         const allowedRoles = await utils.getAllowedRolesNames(serverId);
 
         interaction.reply({
-          content: `You do not have permissions to run this command. The following people are able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join(
-            "\n"
-          )}\n\nContact the server owner to give you permission`,
+          content: getListMessage(utils.userIsAllowed, allowedUsers, allowedRoles),
           ephemeral: true,
         });
         return;
@@ -153,10 +148,15 @@ const handleCommand = async (interaction) => {
       //get the roles who can enable/disable the bot
       const allowedRoles = await utils.getAllowedRolesNames(serverId);
 
-      `You do not have permissions to run this command. The following people are able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join("\n")}\n\nContact the server owner to give you permission`
+      userIsAllowed = await utils.userIsAllowed(interaction, serverId);
 
+      interaction.reply({ content: getListMessage(userIsAllowed, allowedUsers, allowedRoles), ephemeral: true });
       break;
   }
 };
+
+const getListMessage = (userIsAllowed, allowedUsers, allowedRoles) => {
+  return `You ${!userIsAllowed ? "do not " : ""}have permissions to run **/${setEnabledCommandName}**. Here is a full list of people are ${userIsAllowed ? "also " : ""}able to run it:\n### Users\n${allowedUsers.join("\n")}\n### Roles\n${allowedRoles.join("\n")}${ !userIsAllowed ? "\n\nContact the server owner to give you permission " : ""}`
+}
 
 module.exports = { registerCommands, handleCommand };

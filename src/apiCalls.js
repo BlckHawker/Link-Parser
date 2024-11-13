@@ -44,12 +44,8 @@ const getServerRolesWithIds = async (serverId, roleIds) => {
     return roles;
 }
 
-const getServerRoles = async(serverId) => {
-    return await getAPICall(`${baseUrl}/guilds/${serverId}/roles`);
-}
-
 const getServer = async (serverId) => {
     return await getAPICall(`${baseUrl}/guilds/${serverId}`)
 }
 
-module.exports = { getServerUsers, getServerRoles: getServerRolesWithIds, getServer, getServerRoles }
+module.exports = { getServerUser, getServerUsers, getServerRolesWithIds, getServer }

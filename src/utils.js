@@ -108,7 +108,7 @@ const updateObject = (oldObject, changeIndex, newValue) => {
 const getAllowedRolesNames = async (serverId) => {
   const data = readDataFile();
   const serverObj = data.find((obj) => obj.serverId === serverId);
-  const validRolesObj = await apiCalls.getServerRoles(serverObj.serverId, serverObj.allowedRoles);
+  const validRolesObj = await apiCalls.getServerRolesWithIds(serverObj.serverId, serverObj.allowedRoles);
   return validRolesObj.length == 0 ? [`- N/A`] : validRolesObj.map((obj) => `- **${obj.name}**`);
 };
 
@@ -122,17 +122,19 @@ const getAllowedUserNames = async (serverId) => {
   return validUserObj.map((obj, ix) => `- **${obj.user.username}**${ix == 0 ? " (the server owner)" : ""}`);
 };
 
-const userIsAllowed = async (userId, serverId) => {
+//checks if user is allowed to use (dis)enable the bot. True if any of the criteria are met
+/*
+* The server owner
+* A whitelisted user
+* Have at least one whitelisted role 
+*/
+const userIsAllowed = async (interaction) => {
+  const serverId = interaction.channel.guild.id;
   const data = readDataFile();
-  const serverObj = await apiCalls.getServer(serverId);
-  const jsonServerObj = data.find((obj) => obj.serverId === serverId);
-  const roles = await apiCalls.getServerRoles()
-  //todo get the userObj and check if the user has one of the desired roles
-  const userObj = apiCalls.getServerUser(serverId, userId);
-  console.log(userObj);
-  
-  return serverObj.owner_id == userId || 
-        roleIds.some(id => serverObj.allowedUsers.includes(id))
+  const serverObj = data.find((obj) => obj.serverId === serverId);
+  return interaction.guild.ownerId == interaction.user.id ||
+  interaction.member.roles.cache.some((role) => serverObj.allowedRoles.includes(role.id)) ||
+  serverObj.allowedUsers.includes(interaction.user.id)
 
         
 
