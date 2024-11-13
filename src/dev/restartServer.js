@@ -1,15 +1,15 @@
-const { saveToDataFile, readDataFile, replaceLink, createNewObject } = require("../utils");
+const utils = require("../utils");
 (async () => {
     const restartAllServers = false;
     const serverId = '1302773269018968115';
 
     try {
-        let data = readDataFile();
+        let data = utils.readDataFile();
 
         //if restartAllServers is true, restart all servers (shocker)
         if(restartAllServers) {
-            data = data.map(obj => createNewObject(obj.serverId));
-            saveToDataFile(data);
+            data = data.map(obj => utils.createNewObject(obj.serverId));
+            utils.saveToDataFile(data);
         }
 
         else {
@@ -17,14 +17,14 @@ const { saveToDataFile, readDataFile, replaceLink, createNewObject } = require("
             
             //if the server is not in data, make a new object
             if(!obj) {
-                data.push(createNewObject(serverId))
+                data.push(utils.createNewObject(serverId))
                 saveToDataFile(data);
             }
 
             //otherwise, update the object
             else {
                 data = data.filter(obj => obj.serverId != serverId);
-                const newObj = createNewObject(serverId);
+                const newObj = utils.createNewObject(serverId);
                 data.push(newObj);
                 saveToDataFile(data);
             }

@@ -93,11 +93,11 @@ const updateObject = (oldObject, changeIndex, newValue) => {
       break;
 
     case 1: //allowedRoles
-      newObject.allowedRoles.push(newValue);
+      newObject.allowedRoles = newValue;
       break;
 
     case 2: //allowedUsers
-      newObject.allowedUsers.push(newValue);
+    newObject.allowedUsers = newValue;
       break;
   }
   return newObject;

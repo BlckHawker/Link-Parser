@@ -8,7 +8,9 @@
   {
     "serverId": "1302773269018968115",
     "enabled": true,
-    "allowedRoles": [],
+    "allowedRoles": [
+      "1303074181294063717"
+    ],
     "allowedUsers": []
   }
 ]

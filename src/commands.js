@@ -3,7 +3,7 @@ const { getServerUsers, getServerRoles } = require("./apiCalls");
 
 const { REST, Routes, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 const apiCalls = require("./apiCalls");
-const setEnabledCommandName = "set-enabled";
+const setEnabledCommandName = "toggle-bot";
 const viewEnabledCommandName = "view-enabled";
 const enablePersonRole = "allow-enable";
 const disablePersonRole = "disallow-enable"
@@ -45,7 +45,7 @@ const registerCommands = (serverId) => {
         },
         {
           name: "role",
-          description: "The role who will be allowed to enable/disable the bot",
+          description: "The role that will be allowed to enable/disable the bot",
           type: ApplicationCommandOptionType.Role,
         },
       ],
@@ -53,6 +53,22 @@ const registerCommands = (serverId) => {
     {
       name: viewEnableUserRoles,
       description: `View who is able to use the "/${setEnabledCommandName}" command`
+    },
+    {
+      name: disablePersonRole,
+      description: "Remove a specific user or role from of enabling/disabling the bot. Requires role **OR** user option",
+      options: [
+        {
+          name: "user",
+          description: "The user who will be be removed from enabling/disabling the bot",
+          type: ApplicationCommandOptionType.User,
+        },
+        {
+          name: "role",
+          description: "The role that will be be removed from enabling/disabling the bot",
+          type: ApplicationCommandOptionType.Role,
+        },
+      ],
     }
   ];
 
@@ -75,6 +91,8 @@ const handleCommand = async (interaction) => {
   let data = utils.readDataFile();
   const serverId = interaction.channel.guild.id;
   const serverObj = data.find((obj) => obj.serverId === serverId);
+  let targetUser;
+  let targetRole;
 
   switch (interaction.commandName) {
     case "help":
@@ -128,6 +146,7 @@ const handleCommand = async (interaction) => {
       break;
 
     case enablePersonRole:
+      //todo redo all of the testing about allow/removing a user/role
       //if the person who used this command isn't the server owner, send a warning
       //todo test this with someone
       if (interaction.channel.guild.ownerId !== interaction.guild.ownerId) {
@@ -136,8 +155,8 @@ const handleCommand = async (interaction) => {
       }
 
       //get the options
-      const targetUser = interaction.options.get("user")?.value;
-      const targetRole = interaction.options.get("role")?.value;
+      targetUser = interaction.options.get("user")?.value;
+      targetRole = interaction.options.get("role")?.value;
 
 
       //if both options are given, send a waring
@@ -149,6 +168,7 @@ const handleCommand = async (interaction) => {
       //if neither option is given, send a warning
       if (targetUser === undefined && targetRole === undefined) {
         interaction.reply({ content: `You did not provide either the user or role.`, ephemeral: true });
+        return;
       }
 
       if (targetUser !== undefined) {
@@ -166,7 +186,7 @@ const handleCommand = async (interaction) => {
 
         //add the desired user to the appropriate array, and send a message
         else {
-          const newObject = utils.updateObject(serverObj, 2, targetUser);
+          const newObject = utils.updateObject(serverObj, 2, [targetUser].concat(serverObj.allowedUsers));
           data = data.filter((obj) => obj.serverId !== serverId);
           data.push(newObject);
           utils.saveToDataFile(data);
@@ -192,7 +212,7 @@ const handleCommand = async (interaction) => {
 
         //add the desired role to the appropriate array, and send a message
         else {
-          const newObject = utils.updateObject(serverObj, 3, targetUser);
+          const newObject = utils.updateObject(serverObj, 1, [targetRole].concat(serverObj.allowedRoles));
           data = data.filter((obj) => obj.serverId !== serverId);
           data.push(newObject);
           utils.saveToDataFile(data);
@@ -202,6 +222,75 @@ const handleCommand = async (interaction) => {
       }
       break;
 
+    case disablePersonRole:
+      //only the server owner is allowed to use this command
+      if (interaction.channel.guild.ownerId !== interaction.guild.ownerId) {
+        interaction.reply({ content: `Only the server owner can run this command`, ephemeral: true });
+        return;
+      }
+
+      //get the options
+      targetUser = interaction.options.get("user")?.value;
+      targetRole = interaction.options.get("role")?.value;
+
+      //if both options are given, send a waring
+      if (targetUser !== undefined && targetRole !== undefined) {
+        interaction.reply({ content: `Need either the user or role. Can't give both`, ephemeral: true });
+        return;
+      }
+
+      //if neither option is given, send a warning
+      if (targetUser === undefined && targetRole === undefined) {
+        interaction.reply({ content: `You did not provide either the user or role.`, ephemeral: true });
+        return;
+      }
+
+      if(targetUser !== undefined) {
+        const userObj = await apiCalls.getServerUser(serverId, targetUser);
+        //if the user is not on the list, send a warning
+        if(!serverObj.allowedUsers.includes(targetUser)) {
+          interaction.reply({ content: `**${userObj.user.username}** is already not allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true });
+          return;
+        }
+
+        //remove the user from the list
+        else {
+          const newList = serverObj.allowedUsers.filter(id => id != targetUser);
+          const newObject = utils.updateObject(serverObj, 2, newList);
+          data = data.filter((obj) => obj.serverId !== serverId);
+          data.push(newObject);
+          utils.saveToDataFile(data);
+          interaction.reply({ content: `**${userObj.user.username}** is now unable to use the **/${setEnabledCommandName}** command`, ephemeral: true })
+          return;
+        }
+      }
+
+      else {
+        //todo if the role is not on the list, send a warning
+        const roleObj = await apiCalls.getServerRoleId(serverId, targetRole);
+
+        //if the desired role is already added, send a warning
+        if (!serverObj.allowedRoles.includes(targetRole)) {
+          interaction.reply({ content: `Role **${roleObj.name}** is already not allowed to use the **/${setEnabledCommandName}** command`, ephemeral: true });
+          return;
+        }
+
+        //todo remove the role from the list
+        else {
+          const newList = serverObj.allowedRoles.filter(id => id != targetRole);
+          const newObject = utils.updateObject(serverObj, 2, newList);
+          data = data.filter((obj) => obj.serverId !== serverId);
+          data.push(newObject);
+          console.log(newObject)
+          // utils.saveToDataFile(data);
+          interaction.reply({ content: `Role **${roleObj.name}** is now unable to use the **/${setEnabledCommandName}** command`, ephemeral: true })
+          return;
+        }
+      }
+
+      
+
+      break;
     case viewEnableUserRoles:
       //get the users who can enable/disable the bot
       const allowedUsers = await utils.getAllowedUserNames(serverId);
