@@ -150,7 +150,7 @@ const handleCommand = async (interaction) => {
       //todo redo all of the testing about allow/removing a user/role
       //if the person who used this command isn't the server owner, send a warning
       //todo test this with someone
-      if (interaction.channel.guild.ownerId !== interaction.guild.ownerId) {
+      if (interaction.user.id !== interaction.guild.ownerId) {
         interaction.reply({ content: `Only the server owner can run this command`, ephemeral: true });
         return;
       }
@@ -225,7 +225,7 @@ const handleCommand = async (interaction) => {
 
     case disablePersonRole:
       //only the server owner is allowed to use this command
-      if (interaction.channel.guild.ownerId !== interaction.guild.ownerId) {
+      if (interaction.user.id !== interaction.guild.ownerId) {
         interaction.reply({ content: `Only the server owner can run this command`, ephemeral: true });
         return;
       }
