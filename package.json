@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "register": "node src/dev/registerCommands.js",
+    "restart": "node src/dev/restartServer.js",
+    "missing-variables": "node src/dev/addMissingVariables.js"
   },
   "keywords": [],
   "author": "",

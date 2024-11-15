@@ -6,7 +6,7 @@ const utils = require("../utils");
     try {
         let data = utils.readDataFile();
 
-        //if restartAllServers is true, restart all servers (shocker)
+        //if restartAllServers is true, restart all server data back to the default values
         if(restartAllServers) {
             data = data.map(obj => utils.createNewObject(obj.serverId));
             utils.saveToDataFile(data);
@@ -18,7 +18,7 @@ const utils = require("../utils");
             //if the server is not in data, make a new object
             if(!obj) {
                 data.push(utils.createNewObject(serverId))
-                saveToDataFile(data);
+                utils.saveToDataFile(data);
             }
 
             //otherwise, update the object
@@ -26,7 +26,7 @@ const utils = require("../utils");
                 data = data.filter(obj => obj.serverId != serverId);
                 const newObj = utils.createNewObject(serverId);
                 data.push(newObj);
-                saveToDataFile(data);
+                utils.saveToDataFile(data);
             }
         }
     } 
