@@ -1,8 +1,8 @@
 [
   {
     "serverId": "1302773269018968115",
+    "enabled": false,
     "allowedRoles": [],
-    "allowedUsers": [],
-    "enabled": false
+    "allowedUsers": []
   }
 ]

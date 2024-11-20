@@ -4,7 +4,7 @@ const commands = require("./commands");
 const apiCalls = require('./apiCalls')
 const { Client, IntentsBitField } = require("discord.js");
 const client = new Client({
-  intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent],
+  intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.GuildPresences],
 });
 
 client.on("ready", (c) => {
@@ -58,8 +58,29 @@ client.on("guildDelete", (guild) => {
   utils.saveToDataFile(data);
 });
 
+client.on('guildMemberRemove', (member) => {
+  //a user is removed from a server, verify that it's not in "allowedUsers" for that server
+  const userId = member.id;
+  const serverId = member.guild.id;
+  let data = utils.readDataFile();
+  const serverObj = data.find((obj) => obj.serverId === serverId);
+  data = data.filter((obj) => obj.serverId !== serverId);
+
+  if(serverObj.allowedUsers.includes(userId)) {
+    const newUsers = serverObj.allowedUsers.filter(id => id !== userId);
+    const newObj = utils.updateObject(serverObj, 2, newUsers);
+    data.push(newObj);
+  }
+
+  else {
+    data.push(serverObj);
+  }
+
+  utils.saveToDataFile(data);
+});
+
 client.on("roleDelete", (role) => {
-  //when the a role is removed from a server, verify that it's not in "allowedRoles" for that server
+  //when a role is removed from a server, verify that it's not in "allowedRoles" for that server
   const roleId = role.id;
   const serverId = role.guild.id;
   let data = utils.readDataFile();
@@ -69,8 +90,13 @@ client.on("roleDelete", (role) => {
     const newRoles = serverObj.allowedRoles.filter(id => id !== roleId);
     const newObj = utils.updateObject(serverObj, 1, newRoles);
     data.push(newObj);
-    utils.saveToDataFile(data);
   }
+
+  else {
+    data.push(serverObj);
+  }
+
+  utils.saveToDataFile(data);
 })
 
 client.on("interactionCreate", async (interaction) => {
