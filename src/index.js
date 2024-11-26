@@ -12,6 +12,7 @@ client.on("ready", (c) => {
 });
 
 client.on("messageCreate", async (message) => {
+
   //if any of the following is true, don't do anything
   /** message came from a bot
    * message content is empty

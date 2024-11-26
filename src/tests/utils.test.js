@@ -55,8 +55,13 @@ describe('Twitter links', () => {
         });
 
         test('With the "t" query', () => {
-            const value = replaceLink('https://x.com/nocontextfrogs/status/1854245804636307732?t=DPyJiFEk9KbcF6zHaCHWHA&s=19');
+            let objs = [{input: 'https://x.com/nocontextfrogs/status/1854245804636307732?t=DPyJiFEk9KbcF6zHaCHWHA&s=19', expect: "https://fixupx.com/nocontextfrogs/status/1854245804636307732"}]
+            let value = replaceLink('https://x.com/nocontextfrogs/status/1854245804636307732?t=DPyJiFEk9KbcF6zHaCHWHA&s=19');
             expect(value).toBe('https://fixupx.com/nocontextfrogs/status/1854245804636307732');
+
+            value = replaceLink('https://x.com/crocoduck_king/status/1853959783088587091?t=32DMKGJOKiqh7uJtRIZhww&s=19');
+            expect(value).toBe('https://fixupx.com/crocoduck_king/status/1853959783088587091');
+
         })
     })
 })

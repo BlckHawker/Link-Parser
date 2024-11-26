@@ -279,7 +279,8 @@ const handleCommand = async (interaction) => {
         //todo remove the role from the list
         else {
           const newList = serverObj.allowedRoles.filter(id => id != targetRole);
-          const newObject = utils.updateObject(serverObj, 2, newList);
+          const newObject = utils.updateObject(serverObj, 1, newList);
+          console.log(newObject)
           data = data.filter((obj) => obj.serverId !== serverId);
           data.push(newObject);
           utils.saveToDataFile(data);
