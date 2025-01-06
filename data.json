@@ -1,5 +1,11 @@
 [
   {
+    "serverId": "1068949066664382614",
+    "allowedRoles": [],
+    "allowedUsers": [],
+    "enabled": true
+  },
+  {
     "serverId": "1302773269018968115",
     "enabled": true,
     "allowedRoles": [],
