@@ -30,14 +30,8 @@ client.on("messageCreate", async (message) => {
     return;
   }
 
-  //delete the original message
-  message.delete();
-
-  //send the message
-  const newMessage = await message.channel.send(found);
-
-  //update the message so it updates the user
-  newMessage.edit(`${newMessage.content} sent by <@${message.author.id}>`)
+  //reply to the original message
+  message.reply(found);
 
 });
 
