@@ -62,7 +62,7 @@ There are a few scripts defined in `package.json` to stream line to process. Eac
 Use `node src\index.js` to run the bot
 
 ### 4. Create Unit tests (if applicable)
-Unit tests are created to verify the bot is correctly dectecing links. Though they can be used in other causes as well. Please add them in `tests` folder if your addtional is applicable.
+Unit tests are created to verify the bot is correctly detecting links. Though they can be used in other causes as well. Please add them in `tests` folder if your additional is applicable. Run the tests using `npm test`.
 
 ## Slash Commands
 These are the slash commands that the bot handles

@@ -4,12 +4,14 @@ const dataFileName = "../data.json";
 require("dotenv").config();
 const apiCalls = require("./apiCalls");
 
+//todo add method header
 const saveToDataFile = (newObject) => {
   fs.writeFile(path.join(__dirname, dataFileName), JSON.stringify(newObject, null, 2), (err) => {
     if (err) return console.log(err);
   });
 };
 
+//todo add method header
 const readDataFile = () => {
   return JSON.parse(fs.readFileSync(path.join(__dirname, dataFileName)));
 };

@@ -5,6 +5,29 @@ test('a message without a link should not work', () => {
     expect(value).toBeUndefined();
 })
 
+describe('A message with a link along with other text should work', () => {
+
+    const link = 'https://www.tiktok.com/t/ZTFcqUXqp/'
+    const gibberish = 'fdsafjdsajfdasfdasfdas'
+    const expectedValue = 'https://www.vxtiktok.com/t/ZTFcqUXqp/'
+    //todo there is a link at the beginning
+    test('todo there is a link at the beginning', () => {
+        const value = replaceLink(`${link}${gibberish}`);
+        expect(value).toBe(expectedValue);
+    });
+
+     //todo there is a link in the middle
+     test('todo there is a link in the middle', () => {
+        const value = replaceLink(`${gibberish}${link}${gibberish}`);
+        expect(value).toBe(expectedValue);
+    });
+    //todo there is a link at the end
+    test('todo there is a link at the end', () => {
+        const value = replaceLink(`${gibberish}${link}`);
+        expect(value).toBe(expectedValue);
+    })
+})
+
 describe('Tiktok links', () => {
     test('Links with "t" id should parse correctly', () => {
         const value = replaceLink('https://www.tiktok.com/t/ZTFcqUXqp/');
