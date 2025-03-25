@@ -13,6 +13,8 @@ Here is a list of all the sites that are supported and the bot will look out for
 
 [Video Explaination](https://youtu.be/GmQVyxlycBU?t=453)
 
+Works in both dms and enabled servers
+
 ![Bot example gif](https://github.com/user-attachments/assets/d2ce7aa3-273e-4b5e-b0f1-f4ebcd03b0cc)
 
 

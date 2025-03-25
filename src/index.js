@@ -2,9 +2,21 @@ require("dotenv").config();
 const utils = require("./utils");
 const commands = require("./commands");
 const apiCalls = require('./apiCalls')
-const { Client, IntentsBitField } = require("discord.js");
+const { Client, IntentsBitField, GatewayIntentBits, Partials } = require("discord.js");
 const client = new Client({
-  intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.GuildPresences],
+  intents: [
+    GatewayIntentBits.DirectMessages, 
+    GatewayIntentBits.MessageContent,
+    IntentsBitField.Flags.Guilds, 
+    IntentsBitField.Flags.GuildMembers, 
+    IntentsBitField.Flags.GuildMessages, 
+    IntentsBitField.Flags.GuildPresences,
+    IntentsBitField.Flags.MessageContent],
+
+    partials: [
+      Partials.Channel,
+      Partials.Message
+  ] 
 });
 
 client.on("ready", (c) => {
@@ -13,16 +25,21 @@ client.on("ready", (c) => {
 
 client.on("messageCreate", async (message) => {
 
-  //if any of the following is true, don't do anything
-  /** message came from a bot
-   * message content is empty
-   * the bot is disabled in the sever */
+  //if the message came from a dm, reply to it
+  const isDM = !message.guild;
 
-  const serverId = message.channel.guild.id;
-  let data = utils.readDataFile();
-  const serverObj = data.find((obj) => obj.serverId === serverId);
-  if (message.author.bot || !message.content || !serverObj.enabled) {
-    return;
+  if(!isDM) {
+    //if any of the following is true, don't do anything
+    /** message came from a bot
+     * message content is empty
+     * the bot is disabled in the sever */
+
+    const serverId = message.guild.id;
+    let data = utils.readDataFile();
+    const serverObj = data.find((obj) => obj.serverId === serverId);
+    if (message.author.bot || !message.content || !serverObj.enabled) {
+      return;
+    }
   }
 
   const found = utils.replaceLink(message.content)
