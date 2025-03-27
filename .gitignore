@@ -1,2 +1,4 @@
 .env
+dev.env
+release.env
 node_modules
