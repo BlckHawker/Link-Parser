@@ -13,6 +13,8 @@ Here is a list of all the sites that are supported and the bot will look out for
 
 [Video Explaination](https://youtu.be/GmQVyxlycBU?t=453)
 
+Works in both dms and enabled servers
+
 ![Bot example gif](https://github.com/user-attachments/assets/d2ce7aa3-273e-4b5e-b0f1-f4ebcd03b0cc)
 
 
@@ -62,7 +64,7 @@ There are a few scripts defined in `package.json` to stream line to process. Eac
 Use `node src\index.js` to run the bot
 
 ### 4. Create Unit tests (if applicable)
-Unit tests are created to verify the bot is correctly dectecing links. Though they can be used in other causes as well. Please add them in `tests` folder if your addtional is applicable.
+Unit tests are created to verify the bot is correctly detecting links. Though they can be used in other causes as well. Please add them in `tests` folder if your additional is applicable. Run the tests using `npm test`.
 
 ## Slash Commands
 These are the slash commands that the bot handles
