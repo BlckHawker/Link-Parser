@@ -10,5 +10,13 @@
     "enabled": true,
     "allowedRoles": [],
     "allowedUsers": []
+  },
+  {
+    "serverId": "942226390370107422",
+    "enabled": true,
+    "allowedRoles": [],
+    "allowedUsers": [
+      "330475170835726347"
+    ]
   }
 ]

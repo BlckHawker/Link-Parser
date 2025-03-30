@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "jest",
     "register": "node src/dev/registerCommands.js",
     "restart": "node src/dev/restartServer.js",
