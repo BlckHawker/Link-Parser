@@ -71,6 +71,41 @@ const replaceLink = (str) => {
         return `https://www.ddinstagram.com/reel/${arr[1]}/`;
       },
     },
+    {
+      // /r/:subreddit/comments/:id/:slug/:comment
+      regex: /https:\/\/(?:www\.)?reddit\.com\/r\/(.+)\/comments\/(.+)\/(.+)\/(.+)/,
+      callback: (arr) => {
+        return `https://rxddit.com/r/${arr[1]}/comments/${arr[2]}/${arr[3]}/${arr[4]}`;
+      }
+    },
+    {
+      // /r/:subreddit/comments/:id/:slug
+      regex: /https:\/\/(?:www\.)?reddit\.com\/r\/(.+)\/comments\/(.+)\/(.+)/,
+      callback: (arr) => {
+        return `https://rxddit.com/r/${arr[1]}/comments/${arr[2]}/${arr[3]}`;
+      }
+    },
+    {
+      // /r/:subreddit/comments/:id
+      regex: /https:\/\/(?:www\.)?reddit\.com\/r\/(.+)\/comments\/(.+)/,
+      callback: (arr) => {
+        return `https://rxddit.com/r/${arr[1]}/comments/${arr[2]}`;
+      }
+    },
+    {
+      // /r/:subreddit/s/:id
+      regex: /https:\/\/(?:www\.)?reddit\.com\/r\/(.+)\/s\/(.+)/,
+      callback: (arr) => {
+        return `https://rxddit.com/r/${arr[1]}/s/${arr[2]}`;
+      }
+    },
+    {
+      // /:id
+      regex: /https:\/\/(?:www\.)?reddit\.com\/(.+)/,
+      callback: (arr) => {
+        return `https://rxddit.com/${arr[1]}`;
+      }
+    }
   ];
 
   //check if any of the links are what we're looking for. If they are, parse into the new link and return it

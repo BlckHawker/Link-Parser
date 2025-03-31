@@ -89,8 +89,6 @@ describe('Twitter links', () => {
     })
 })
 
-
-
 describe('Instagram links', () => {
     describe('Pictures', () => {
         test('Links that have something more than just a link should not be processed', () => {
@@ -131,5 +129,38 @@ describe('Instagram links', () => {
             const value = replaceLink('https://www.instagram.com/reel/DBFlxZiSbVz/');
             expect(value).toBe('https://www.ddinstagram.com/reel/DBFlxZiSbVz/');
         })
+    })
+})
+
+describe ('Reddit links', () => {
+    test('/r/:subreddit/comments/:id/:slug/:comment', () => {
+        const value = replaceLink('https://reddit.com/r/shittymoviedetails/comments/160onpq/breaking_actor_from_home_alone_2_arrested_today/jxnkq4g');
+        expect(value).toBe('https://rxddit.com/r/shittymoviedetails/comments/160onpq/breaking_actor_from_home_alone_2_arrested_today/jxnkq4g');
+    })
+
+    test('/r/:subreddit/comments/:id/:slug', () => {
+        const value = replaceLink('https://reddit.com/r/shittymoviedetails/comments/160onpq/breaking_actor_from_home_alone_2_arrested_today');
+        expect(value).toBe('https://rxddit.com/r/shittymoviedetails/comments/160onpq/breaking_actor_from_home_alone_2_arrested_today');
+    })
+
+    test('/r/:subreddit/comments/:id', () => {
+        const value = replaceLink('https://reddit.com/r/shittymoviedetails/comments/160onpq');
+        expect(value).toBe('https://rxddit.com/r/shittymoviedetails/comments/160onpq');
+    })
+
+    test('/r/:subreddit/s/:id', () => {
+        const value = replaceLink('https://reddit.com/r/MemePiece/s/15w6vzg82W');
+        expect(value).toBe('https://rxddit.com/r/MemePiece/s/15w6vzg82W');
+    })
+
+    test('/:id', () => {
+        const value = replaceLink('https://reddit.com/160onpq');
+        expect(value).toBe('https://rxddit.com/160onpq');
+    })
+
+    
+    test('urls with www should work', () => {
+        const value = replaceLink('https://www.reddit.com/r/whenthe/s/EqMImttPxG');
+        expect(value).toBe('https://rxddit.com/r/whenthe/s/EqMImttPxG');
     })
 })
